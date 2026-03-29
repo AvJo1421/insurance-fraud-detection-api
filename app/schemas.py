@@ -1,0 +1,40 @@
+from pydantic import BaseModel
+
+class ClaimRequest(BaseModel):
+    months_as_customer: int
+    age: int
+    policy_state: int
+    policy_csl: int
+    policy_deductable: int
+    policy_annual_premium: float
+    umbrella_limit: int
+    insured_sex: int
+    insured_education_level: int
+    insured_occupation: int
+    insured_hobbies: int
+    insured_relationship: int
+    capital_gains: float
+    capital_loss: float
+    incident_type: int
+    collision_type: int
+    incident_severity: int
+    authorities_contacted: int
+    incident_state: int
+    incident_city: int
+    incident_hour_of_the_day: int
+    number_of_vehicles_involved: int
+    property_damage: int
+    bodily_injuries: int
+    witnesses: int
+    police_report_available: int
+    total_claim_amount: int
+    injury_claim: int
+    property_claim: int
+    vehicle_claim: int
+    auto_make: int
+    auto_model: int
+    auto_year: int
+
+class ClaimResponse(BaseModel):
+    fraud_predicted: int
+    probability: float
