@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Fraud Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+        }
+        .fraud {
+            background-color: #ffcccc;
+            color: #cc0000;
+        }
+        .not-fraud {
+            background-color: #ccffcc;
+            color: #006600;
+        }
+    </style>
+</head>
+<body>
+    <h1>Insurance Fraud Detector</h1>
+
+    <div class="form-group">
+        <label>Months as customer</label>
+        <input type="number" id="months_as_customer" value="120">
+    </div>
+    <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="age" value="45">
+    </div>
+    <div class="form-group">
+        <label>Policy deductable</label>
+        <input type="number" id="policy_deductable" value="1000">
+    </div>
+    <div class="form-group">
+        <label>Policy annual premium</label>
+        <input type="number" id="policy_annual_premium" value="1400">
+    </div>
+    <div class="form-group">
+        <label>Total claim amount</label>
+        <input type="number" id="total_claim_amount" value="70000">
+    </div>
+    <div class="form-group">
+        <label>Injury claim</label>
+        <input type="number" id="injury_claim" value="7000">
+    </div>
+    <div class="form-group">
+        <label>Property claim</label>
+        <input type="number" id="property_claim" value="13000">
+    </div>
+    <div class="form-group">
+        <label>Vehicle claim</label>
+        <input type="number" id="vehicle_claim" value="50000">
+    </div>
+    <div class="form-group">
+        <label>Auto year</label>
+        <input type="number" id="auto_year" value="2015">
+    </div>
+    <div class="form-group">
+        <label>Number of vehicles involved</label>
+        <input type="number" id="number_of_vehicles_involved" value="1">
+    </div>
+    <div class="form-group">
+        <label>Bodily injuries</label>
+        <input type="number" id="bodily_injuries" value="1">
+    </div>
+    <div class="form-group">
+        <label>Witnesses</label>
+        <input type="number" id="witnesses" value="2">
+    </div>
+    <div class="form-group">
+        <label>Incident hour of the day</label>
+        <input type="number" id="incident_hour_of_the_day" value="14">
+    </div>
+
+    <button onclick="predict()">Check for Fraud</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function predict() {
+            const data = {
+                months_as_customer: parseInt(document.getElementById('months_as_customer').value),
+                age: parseInt(document.getElementById('age').value),
+                policy_state: 1,
+                policy_csl: 1,
+                policy_deductable: parseInt(document.getElementById('policy_deductable').value),
+                policy_annual_premium: parseFloat(document.getElementById('policy_annual_premium').value),
+                umbrella_limit: 0,
+                insured_sex: 1,
+                insured_education_level: 1,
+                insured_occupation: 1,
+                insured_hobbies: 1,
+                insured_relationship: 1,
+                capital_gains: 0,
+                capital_loss: 0,
+                incident_type: 1,
+                collision_type: 1,
+                incident_severity: 1,
+                authorities_contacted: 1,
+                incident_state: 1,
+                incident_city: 1,
+                incident_hour_of_the_day: parseInt(document.getElementById('incident_hour_of_the_day').value),
+                number_of_vehicles_involved: parseInt(document.getElementById('number_of_vehicles_involved').value),
+                property_damage: 1,
+                bodily_injuries: parseInt(document.getElementById('bodily_injuries').value),
+                witnesses: parseInt(document.getElementById('witnesses').value),
+                police_report_available: 1,
+                total_claim_amount: parseInt(document.getElementById('total_claim_amount').value),
+                injury_claim: parseInt(document.getElementById('injury_claim').value),
+                property_claim: parseInt(document.getElementById('property_claim').value),
+                vehicle_claim: parseInt(document.getElementById('vehicle_claim').value),
+                auto_make: 1,
+                auto_model: 1,
+                auto_year: parseInt(document.getElementById('auto_year').value)
+            };
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+
+            if (result.fraud_predicted === 1) {
+                resultDiv.className = 'fraud';
+                resultDiv.innerHTML = '🚨 FRAUD DETECTED! Probability: ' + (result.probability * 100).toFixed(1) + '%';
+            } else {
+                resultDiv.className = 'not-fraud';
+                resultDiv.innerHTML = '✅ NOT FRAUD. Probability: ' + (result.probability * 100).toFixed(1) + '%';
+            }
+        }
+    </script>
+</body>
+</html>
