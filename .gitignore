@@ -1,0 +1,8 @@
+fraud-api-key.pem
+rootkey.csv
+data/
+model/model.pkl
+venv/
+__pycache__/
+*.pyc
+app/__pycache__/

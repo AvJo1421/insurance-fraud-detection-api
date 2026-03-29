@@ -1,0 +1,44 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 039612874099.dkr.ecr.us-east-1.amazonaws.com
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t insurance-fraud-api .
+        docker tag insurance-fraud-api:latest 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
+        docker push 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: 13.218.98.72
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 039612874099.dkr.ecr.us-east-1.amazonaws.com
+          sudo docker pull 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
+          sudo docker stop fraud-api || true
+          sudo docker rm fraud-api || true
+          sudo docker run -d --name fraud-api -p 8000:8000 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
