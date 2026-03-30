@@ -135,6 +135,28 @@
             color: #9ca3af;
         }
 
+        #explanation {
+            display: none;
+            margin-top: 12px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #d1d5db;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        #explanation .exp-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7c3aed;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -145,7 +167,7 @@
     <div class="container">
         <div class="header">
             <h1>Insurance Fraud Detector</h1>
-            <p>Powered by Machine Learning — Enter claim details to detect fraud</p>
+            <p>Powered by Machine Learning + AI — Enter claim details to detect fraud</p>
         </div>
 
         <div class="card">
@@ -225,6 +247,11 @@
             <div id="result-text"></div>
             <div id="result-prob"></div>
         </div>
+
+        <div id="explanation">
+            <div class="exp-title">AI Analysis</div>
+            <div id="explanation-text"></div>
+        </div>
     </div>
 
     <script>
@@ -277,7 +304,9 @@
 
             const result = await response.json();
             const resultDiv = document.getElementById('result');
+            const explanationDiv = document.getElementById('explanation');
             resultDiv.style.display = 'block';
+            explanationDiv.style.display = 'block';
 
             if (result.fraud_predicted === 1) {
                 resultDiv.className = 'fraud';
@@ -290,6 +319,8 @@
                 document.getElementById('result-text').textContent = 'CLAIM APPEARS LEGITIMATE';
                 document.getElementById('result-prob').textContent = 'Confidence: ' + (result.probability * 100).toFixed(1) + '%';
             }
+
+            document.getElementById('explanation-text').textContent = result.explanation;
 
             btn.textContent = 'ANALYZE FOR FRAUD';
             btn.disabled = false;
