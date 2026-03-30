@@ -5,127 +5,234 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insurance Fraud Detector</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 40px auto;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background: #1c0a2e;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 700px; margin: 0 auto; }
+
+        .header { text-align: center; margin-bottom: 36px; }
+
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #f97316, #ec4899, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header p { color: #9ca3af; font-size: 0.95rem; }
+
+        .card {
+            border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 16px;
             padding: 20px;
-            background-color: #f5f5f5;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.03);
         }
-        h1 {
-            color: #333;
-            text-align: center;
+
+        .badge {
+            background: rgba(249,115,22,0.15);
+            color: #f97316;
+            border: 1px solid rgba(249,115,22,0.4);
+            font-size: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+
         label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(124,58,237,0.4);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #f3f4f6;
+            font-size: 0.9rem;
+            transition: border 0.2s;
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
         }
+
+        input:focus {
+            outline: none;
+            border-color: #ec4899;
+        }
+
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 16px;
+            background: linear-gradient(90deg, #f97316, #ec4899, #7c3aed);
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
             cursor: pointer;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            transition: opacity 0.2s;
         }
-        button:hover {
-            background-color: #45a049;
-        }
+
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
         #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
             display: none;
+            text-align: center;
+            padding: 28px;
+            border-radius: 16px;
+            margin-top: 16px;
+            animation: fadeIn 0.5s ease;
         }
+
         .fraud {
-            background-color: #ffcccc;
-            color: #cc0000;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.5);
         }
+
         .not-fraud {
-            background-color: #ccffcc;
-            color: #006600;
+            background: rgba(0,255,136,0.08);
+            border: 1px solid rgba(0,255,136,0.4);
+        }
+
+        #result-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+        #result-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .fraud #result-text { color: #f87171; }
+        .not-fraud #result-text { color: #00ff88; }
+
+        #result-prob {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <h1>Insurance Fraud Detector</h1>
+    <div class="container">
+        <div class="header">
+            <h1>Insurance Fraud Detector</h1>
+            <p>Powered by Machine Learning — Enter claim details to detect fraud</p>
+        </div>
 
-    <div class="form-group">
-        <label>Months as customer</label>
-        <input type="number" id="months_as_customer" value="120">
-    </div>
-    <div class="form-group">
-        <label>Age</label>
-        <input type="number" id="age" value="45">
-    </div>
-    <div class="form-group">
-        <label>Policy deductable</label>
-        <input type="number" id="policy_deductable" value="1000">
-    </div>
-    <div class="form-group">
-        <label>Policy annual premium</label>
-        <input type="number" id="policy_annual_premium" value="1400">
-    </div>
-    <div class="form-group">
-        <label>Total claim amount</label>
-        <input type="number" id="total_claim_amount" value="70000">
-    </div>
-    <div class="form-group">
-        <label>Injury claim</label>
-        <input type="number" id="injury_claim" value="7000">
-    </div>
-    <div class="form-group">
-        <label>Property claim</label>
-        <input type="number" id="property_claim" value="13000">
-    </div>
-    <div class="form-group">
-        <label>Vehicle claim</label>
-        <input type="number" id="vehicle_claim" value="50000">
-    </div>
-    <div class="form-group">
-        <label>Auto year</label>
-        <input type="number" id="auto_year" value="2015">
-    </div>
-    <div class="form-group">
-        <label>Number of vehicles involved</label>
-        <input type="number" id="number_of_vehicles_involved" value="1">
-    </div>
-    <div class="form-group">
-        <label>Bodily injuries</label>
-        <input type="number" id="bodily_injuries" value="1">
-    </div>
-    <div class="form-group">
-        <label>Witnesses</label>
-        <input type="number" id="witnesses" value="2">
-    </div>
-    <div class="form-group">
-        <label>Incident hour of the day</label>
-        <input type="number" id="incident_hour_of_the_day" value="14">
-    </div>
+        <div class="card">
+            <span class="badge">POLICY DETAILS</span>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Months as customer</label>
+                    <input type="number" id="months_as_customer" value="120">
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="age" value="45">
+                </div>
+                <div class="form-group">
+                    <label>Policy deductable</label>
+                    <input type="number" id="policy_deductable" value="1000">
+                </div>
+                <div class="form-group">
+                    <label>Annual premium</label>
+                    <input type="number" id="policy_annual_premium" value="1400">
+                </div>
+            </div>
+        </div>
 
-    <button onclick="predict()">Check for Fraud</button>
+        <div class="card">
+            <span class="badge">INCIDENT DETAILS</span>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Incident hour of day</label>
+                    <input type="number" id="incident_hour_of_the_day" value="14">
+                </div>
+                <div class="form-group">
+                    <label>Vehicles involved</label>
+                    <input type="number" id="number_of_vehicles_involved" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Bodily injuries</label>
+                    <input type="number" id="bodily_injuries" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Witnesses</label>
+                    <input type="number" id="witnesses" value="2">
+                </div>
+            </div>
+        </div>
 
-    <div id="result"></div>
+        <div class="card">
+            <span class="badge">CLAIM DETAILS</span>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Total claim amount</label>
+                    <input type="number" id="total_claim_amount" value="70000">
+                </div>
+                <div class="form-group">
+                    <label>Injury claim</label>
+                    <input type="number" id="injury_claim" value="7000">
+                </div>
+                <div class="form-group">
+                    <label>Property claim</label>
+                    <input type="number" id="property_claim" value="13000">
+                </div>
+                <div class="form-group">
+                    <label>Vehicle claim</label>
+                    <input type="number" id="vehicle_claim" value="50000">
+                </div>
+                <div class="form-group">
+                    <label>Auto year</label>
+                    <input type="number" id="auto_year" value="2015">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="predict()" id="btn">ANALYZE FOR FRAUD</button>
+
+        <div id="result">
+            <div id="result-icon"></div>
+            <div id="result-text"></div>
+            <div id="result-prob"></div>
+        </div>
+    </div>
 
     <script>
         async function predict() {
+            const btn = document.getElementById('btn');
+            btn.textContent = 'ANALYZING...';
+            btn.disabled = true;
+
             const data = {
                 months_as_customer: parseInt(document.getElementById('months_as_customer').value),
                 age: parseInt(document.getElementById('age').value),
@@ -174,11 +281,18 @@
 
             if (result.fraud_predicted === 1) {
                 resultDiv.className = 'fraud';
-                resultDiv.innerHTML = '🚨 FRAUD DETECTED! Probability: ' + (result.probability * 100).toFixed(1) + '%';
+                document.getElementById('result-icon').textContent = '🚨';
+                document.getElementById('result-text').textContent = 'FRAUD DETECTED';
+                document.getElementById('result-prob').textContent = 'Confidence: ' + (result.probability * 100).toFixed(1) + '%';
             } else {
                 resultDiv.className = 'not-fraud';
-                resultDiv.innerHTML = '✅ NOT FRAUD. Probability: ' + (result.probability * 100).toFixed(1) + '%';
+                document.getElementById('result-icon').textContent = '✅';
+                document.getElementById('result-text').textContent = 'CLAIM APPEARS LEGITIMATE';
+                document.getElementById('result-prob').textContent = 'Confidence: ' + (result.probability * 100).toFixed(1) + '%';
             }
+
+            btn.textContent = 'ANALYZE FOR FRAUD';
+            btn.disabled = false;
         }
     </script>
 </body>
