@@ -44,4 +44,4 @@ jobs:
           sudo docker pull 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
           sudo docker stop fraud-api || true
           sudo docker rm fraud-api || true
-          sudo docker run -d --name fraud-api -p 8000:8000 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
+          sudo docker run -d --name fraud-api -p 8000:8000 -e ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }} 039612874099.dkr.ecr.us-east-1.amazonaws.com/insurance-fraud-api:latest
