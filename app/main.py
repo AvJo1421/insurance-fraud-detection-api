@@ -96,8 +96,12 @@ Claim details:
 - Auto year: {request.auto_year}, claim to premium ratio: {request.total_claim_amount / (request.policy_annual_premium + 1):.2f}x
 
 Format your response as:
-ML Assessment: [acknowledge the model prediction]
-Analysis: [your independent 2-3 red flags or reassuring factors]"""
+ML Assessment: [one sentence acknowledging the model prediction]
+
+Red Flags / Reassuring Factors:
+- [point 1]
+- [point 2]
+- [point 3]"""
             }
         ]
     )
