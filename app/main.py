@@ -77,26 +77,30 @@ def predict(request: ClaimRequest):
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=300,
+        max_tokens=400,
         messages=[
             {
                 "role": "user",
-                "content": f"""You are an insurance fraud analyst. Analyze this claim and explain in 2-3 sentences why it {"appears fraudulent" if prediction == 1 else "appears legitimate"}.
+                "content": f"""You are an insurance fraud analyst reviewing a claim.
+
+The ML fraud detection model has predicted: {"⚠️ FRAUDULENT" if prediction == 1 else "✅ LEGITIMATE"} (Confidence: {probability*100:.1f}%)
+
+First acknowledge the ML model's prediction in one sentence. Then independently analyze the claim and list 2-3 red flags or reassuring factors you notice. Be concise and professional.
 
 Claim details:
 - Customer age: {request.age}, months as customer: {request.months_as_customer}
-- Incident hour: {request.incident_hour_of_the_day}, vehicles involved: {request.number_of_vehicles_involved}
+- Incident hour: {request.incident_hour_of_the_day}:00, vehicles involved: {request.number_of_vehicles_involved}
 - Witnesses: {request.witnesses}, bodily injuries: {request.bodily_injuries}
-- Total claim: ${request.total_claim_amount}, vehicle claim: ${request.vehicle_claim}
-- Injury claim: ${request.injury_claim}, property claim: ${request.property_claim}
-- Auto year: {request.auto_year}
-- Claim to premium ratio: {request.total_claim_amount / (request.policy_annual_premium + 1):.2f}
+- Total claim: ${request.total_claim_amount:,}, vehicle claim: ${request.vehicle_claim:,}
+- Injury claim: ${request.injury_claim:,}, property claim: ${request.property_claim:,}
+- Auto year: {request.auto_year}, claim to premium ratio: {request.total_claim_amount / (request.policy_annual_premium + 1):.2f}x
 
-Be concise and professional. Focus on the most suspicious or reassuring factors."""
+Format your response as:
+ML Assessment: [acknowledge the model prediction]
+Analysis: [your independent 2-3 red flags or reassuring factors]"""
             }
         ]
     )
-
     explanation = message.content[0].text
 
     return {
