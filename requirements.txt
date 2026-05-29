@@ -7,3 +7,6 @@ pandas
 anthropic
 python-dotenv
 xgboost
+lightgbm
+shap
+imbalanced-learn

@@ -66,7 +66,7 @@
             letter-spacing: 1px;
         }
 
-        input {
+        input, select {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(124,58,237,0.4);
             border-radius: 8px;
@@ -77,10 +77,12 @@
             width: 100%;
         }
 
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #ec4899;
         }
+
+        select option { background: #1c0a2e; color: white; }
 
         button {
             width: 100%;
@@ -130,9 +132,12 @@
         .fraud #result-text { color: #f87171; }
         .not-fraud #result-text { color: #00ff88; }
 
-        #result-prob {
-            font-size: 0.85rem;
-            color: #9ca3af;
+        #result-prob { font-size: 0.85rem; color: #9ca3af; }
+
+        #result-confidence {
+            font-size: 0.8rem;
+            color: #f97316;
+            margin-top: 4px;
         }
 
         #explanation {
@@ -164,138 +169,306 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Insurance Fraud Detector</h1>
-            <p>Powered by Machine Learning + AI — Enter claim details to detect fraud</p>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>Insurance Fraud Detector</h1>
+        <p>Powered by Machine Learning + AI — Enter claim details to detect fraud</p>
+    </div>
 
-        <div class="card">
-            <span class="badge">POLICY DETAILS</span>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Months as customer</label>
-                    <input type="number" id="months_as_customer" value="120">
-                </div>
-                <div class="form-group">
-                    <label>Age</label>
-                    <input type="number" id="age" value="45">
-                </div>
-                <div class="form-group">
-                    <label>Policy deductable</label>
-                    <input type="number" id="policy_deductable" value="1000">
-                </div>
-                <div class="form-group">
-                    <label>Annual premium</label>
-                    <input type="number" id="policy_annual_premium" value="1400">
-                </div>
+    <!-- POLICY DETAILS -->
+    <div class="card">
+        <span class="badge">POLICY DETAILS</span>
+        <div class="grid">
+            <div class="form-group">
+                <label>Months as Customer</label>
+                <input type="number" id="months_as_customer" value="120">
             </div>
-        </div>
-
-        <div class="card">
-            <span class="badge">INCIDENT DETAILS</span>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Incident hour of day</label>
-                    <input type="number" id="incident_hour_of_the_day" value="14">
-                </div>
-                <div class="form-group">
-                    <label>Vehicles involved</label>
-                    <input type="number" id="number_of_vehicles_involved" value="1">
-                </div>
-                <div class="form-group">
-                    <label>Bodily injuries</label>
-                    <input type="number" id="bodily_injuries" value="1">
-                </div>
-                <div class="form-group">
-                    <label>Witnesses</label>
-                    <input type="number" id="witnesses" value="2">
-                </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="age" value="45">
             </div>
-        </div>
-
-        <div class="card">
-            <span class="badge">CLAIM DETAILS</span>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Total claim amount</label>
-                    <input type="number" id="total_claim_amount" value="70000">
-                </div>
-                <div class="form-group">
-                    <label>Injury claim</label>
-                    <input type="number" id="injury_claim" value="7000">
-                </div>
-                <div class="form-group">
-                    <label>Property claim</label>
-                    <input type="number" id="property_claim" value="13000">
-                </div>
-                <div class="form-group">
-                    <label>Vehicle claim</label>
-                    <input type="number" id="vehicle_claim" value="50000">
-                </div>
-                <div class="form-group">
-                    <label>Auto year</label>
-                    <input type="number" id="auto_year" value="2015">
-                </div>
+            <div class="form-group">
+                <label>Policy State</label>
+                <select id="policy_state">
+                    <option>IL</option><option>IN</option><option selected>OH</option>
+                </select>
             </div>
-        </div>
-
-        <button onclick="predict()" id="btn">ANALYZE FOR FRAUD</button>
-
-        <div id="result">
-            <div id="result-icon"></div>
-            <div id="result-text"></div>
-            <div id="result-prob"></div>
-        </div>
-
-        <div id="explanation">
-            <div class="exp-title">AI Analysis</div>
-            <div id="explanation-text"></div>
+            <div class="form-group">
+                <label>Policy CSL</label>
+                <select id="policy_csl">
+                    <option>100/300</option><option selected>250/500</option><option>500/1000</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Policy Deductable</label>
+                <input type="number" id="policy_deductable" value="1000">
+            </div>
+            <div class="form-group">
+                <label>Annual Premium</label>
+                <input type="number" id="policy_annual_premium" value="1400">
+            </div>
+            <div class="form-group">
+                <label>Umbrella Limit</label>
+                <input type="number" id="umbrella_limit" value="0">
+            </div>
+            <div class="form-group">
+                <label>Capital Gains</label>
+                <input type="number" id="capital_gains" value="0">
+            </div>
+            <div class="form-group">
+                <label>Capital Loss</label>
+                <input type="number" id="capital_loss" value="0">
+            </div>
         </div>
     </div>
 
-    <script>
-        async function predict() {
-            const btn = document.getElementById('btn');
-            btn.textContent = 'ANALYZING...';
-            btn.disabled = true;
+    <!-- INSURED DETAILS -->
+    <div class="card">
+        <span class="badge">INSURED DETAILS</span>
+        <div class="grid">
+            <div class="form-group">
+                <label>Sex</label>
+                <select id="insured_sex">
+                    <option>FEMALE</option><option selected>MALE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Education Level</label>
+                <select id="insured_education_level">
+                    <option>Associate</option><option>College</option><option>High School</option>
+                    <option>JD</option><option selected>MD</option><option>Masters</option><option>PhD</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Occupation</label>
+                <select id="insured_occupation">
+                    <option>adm-clerical</option><option>armed-forces</option><option selected>craft-repair</option>
+                    <option>exec-managerial</option><option>farming-fishing</option><option>handlers-cleaners</option>
+                    <option>machine-op-inspct</option><option>other-service</option><option>priv-house-serv</option>
+                    <option>prof-specialty</option><option>protective-serv</option><option>sales</option>
+                    <option>tech-support</option><option>transport-moving</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hobbies</label>
+                <select id="insured_hobbies">
+                    <option>base-jumping</option><option>basketball</option><option>board-games</option>
+                    <option>bungie-jumping</option><option>camping</option><option>chess</option>
+                    <option>cross-fit</option><option>dancing</option><option>exercise</option>
+                    <option>golf</option><option>hiking</option><option>kayaking</option>
+                    <option>movies</option><option>paintball</option><option>polo</option>
+                    <option>reading</option><option>skydiving</option><option selected>sleeping</option>
+                    <option>video-games</option><option>yachting</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Relationship</label>
+                <select id="insured_relationship">
+                    <option selected>husband</option><option>not-in-family</option><option>other-relative</option>
+                    <option>own-child</option><option>unmarried</option><option>wife</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-            const data = {
-                months_as_customer: parseInt(document.getElementById('months_as_customer').value),
-                age: parseInt(document.getElementById('age').value),
-                policy_state: 1,
-                policy_csl: 1,
-                policy_deductable: parseInt(document.getElementById('policy_deductable').value),
-                policy_annual_premium: parseFloat(document.getElementById('policy_annual_premium').value),
-                umbrella_limit: 0,
-                insured_sex: 1,
-                insured_education_level: 1,
-                insured_occupation: 1,
-                insured_hobbies: 1,
-                insured_relationship: 1,
-                capital_gains: 0,
-                capital_loss: 0,
-                incident_type: 1,
-                collision_type: 1,
-                incident_severity: 1,
-                authorities_contacted: 1,
-                incident_state: 1,
-                incident_city: 1,
-                incident_hour_of_the_day: parseInt(document.getElementById('incident_hour_of_the_day').value),
-                number_of_vehicles_involved: parseInt(document.getElementById('number_of_vehicles_involved').value),
-                property_damage: 1,
-                bodily_injuries: parseInt(document.getElementById('bodily_injuries').value),
-                witnesses: parseInt(document.getElementById('witnesses').value),
-                police_report_available: 1,
-                total_claim_amount: parseInt(document.getElementById('total_claim_amount').value),
-                injury_claim: parseInt(document.getElementById('injury_claim').value),
-                property_claim: parseInt(document.getElementById('property_claim').value),
-                vehicle_claim: parseInt(document.getElementById('vehicle_claim').value),
-                auto_make: 1,
-                auto_model: 1,
-                auto_year: parseInt(document.getElementById('auto_year').value)
-            };
+    <!-- INCIDENT DETAILS -->
+    <div class="card">
+        <span class="badge">INCIDENT DETAILS</span>
+        <div class="grid">
+            <div class="form-group">
+                <label>Incident Type</label>
+                <select id="incident_type">
+                    <option>Multi-vehicle Collision</option><option>Parked Car</option>
+                    <option selected>Single Vehicle Collision</option><option>Vehicle Theft</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Collision Type</label>
+                <select id="collision_type">
+                    <option>?</option><option>Front Collision</option><option>Rear Collision</option>
+                    <option selected>Side Collision</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Incident Severity</label>
+                <select id="incident_severity">
+                    <option>Major Damage</option><option selected>Minor Damage</option>
+                    <option>Total Loss</option><option>Trivial Damage</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Authorities Contacted</label>
+                <select id="authorities_contacted">
+                    <option>Ambulance</option><option>Fire</option><option>Other</option>
+                    <option selected>Police</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Incident State</label>
+                <select id="incident_state">
+                    <option>NC</option><option>NY</option><option selected>OH</option>
+                    <option>PA</option><option>SC</option><option>VA</option><option>WV</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Incident City</label>
+                <select id="incident_city">
+                    <option>Arlington</option><option selected>Columbus</option><option>Hillsdale</option>
+                    <option>Northbend</option><option>Northbrook</option><option>Riverwood</option>
+                    <option>Springfield</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Incident Hour of Day</label>
+                <input type="number" id="incident_hour_of_the_day" value="14" min="0" max="23">
+            </div>
+            <div class="form-group">
+                <label>Vehicles Involved</label>
+                <input type="number" id="number_of_vehicles_involved" value="1">
+            </div>
+            <div class="form-group">
+                <label>Property Damage</label>
+                <select id="property_damage">
+                    <option>YES</option><option selected>NO</option><option>?</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Bodily Injuries</label>
+                <input type="number" id="bodily_injuries" value="1">
+            </div>
+            <div class="form-group">
+                <label>Witnesses</label>
+                <input type="number" id="witnesses" value="2">
+            </div>
+            <div class="form-group">
+                <label>Police Report Available</label>
+                <select id="police_report_available">
+                    <option selected>YES</option><option>NO</option><option>?</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
+    <!-- CLAIM DETAILS -->
+    <div class="card">
+        <span class="badge">CLAIM DETAILS</span>
+        <div class="grid">
+            <div class="form-group">
+                <label>Total Claim Amount</label>
+                <input type="number" id="total_claim_amount" value="70000">
+            </div>
+            <div class="form-group">
+                <label>Injury Claim</label>
+                <input type="number" id="injury_claim" value="7000">
+            </div>
+            <div class="form-group">
+                <label>Property Claim</label>
+                <input type="number" id="property_claim" value="13000">
+            </div>
+            <div class="form-group">
+                <label>Vehicle Claim</label>
+                <input type="number" id="vehicle_claim" value="50000">
+            </div>
+        </div>
+    </div>
+
+    <!-- VEHICLE DETAILS -->
+    <div class="card">
+        <span class="badge">VEHICLE DETAILS</span>
+        <div class="grid">
+            <div class="form-group">
+                <label>Auto Make</label>
+                <select id="auto_make">
+                    <option>Accura</option><option>Audi</option><option>BMW</option>
+                    <option>Chevrolet</option><option>Dodge</option><option>Ford</option>
+                    <option>Honda</option><option>Jeep</option><option>Mercedes</option>
+                    <option>Nissan</option><option>Saab</option><option>Suburu</option>
+                    <option selected>Toyota</option><option>Volkswagen</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Auto Model</label>
+                <select id="auto_model">
+                    <option>3 Series</option><option>92x</option><option>93</option><option>95</option>
+                    <option>A3</option><option>A5</option><option>Accord</option><option>C300</option>
+                    <option>CRV</option><option selected>Camry</option><option>Civic</option>
+                    <option>Corolla</option><option>E400</option><option>Escape</option>
+                    <option>F150</option><option>Forrestor</option><option>Fusion</option>
+                    <option>Grand Cherokee</option><option>Highlander</option><option>Impreza</option>
+                    <option>Jetta</option><option>Legacy</option><option>M5</option><option>MDX</option>
+                    <option>ML350</option><option>Malibu</option><option>Maxima</option><option>Neon</option>
+                    <option>Passat</option><option>Pathfinder</option><option>RAM</option><option>RSX</option>
+                    <option>Silverado</option><option>TL</option><option>Tahoe</option><option>Ultima</option>
+                    <option>Wrangler</option><option>X5</option><option>X6</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Auto Year</label>
+                <input type="number" id="auto_year" value="2015">
+            </div>
+        </div>
+    </div>
+
+    <button onclick="predict()" id="btn">ANALYZE FOR FRAUD</button>
+
+    <div id="result">
+        <div id="result-icon"></div>
+        <div id="result-text"></div>
+        <div id="result-prob"></div>
+        <div id="result-confidence"></div>
+    </div>
+
+    <div id="explanation">
+        <div class="exp-title">AI Analysis</div>
+        <div id="explanation-text"></div>
+    </div>
+</div>
+
+<script>
+    async function predict() {
+        const btn = document.getElementById('btn');
+        btn.textContent = 'ANALYZING...';
+        btn.disabled = true;
+
+        const g = id => document.getElementById(id).value;
+
+        const data = {
+            months_as_customer:           parseInt(g('months_as_customer')),
+            age:                          parseInt(g('age')),
+            policy_state:                 g('policy_state'),
+            policy_csl:                   g('policy_csl'),
+            policy_deductable:            parseInt(g('policy_deductable')),
+            policy_annual_premium:        parseFloat(g('policy_annual_premium')),
+            umbrella_limit:               parseInt(g('umbrella_limit')),
+            insured_sex:                  g('insured_sex'),
+            insured_education_level:      g('insured_education_level'),
+            insured_occupation:           g('insured_occupation'),
+            insured_hobbies:              g('insured_hobbies'),
+            insured_relationship:         g('insured_relationship'),
+            capital_gains:                parseInt(g('capital_gains')),
+            capital_loss:                 parseInt(g('capital_loss')),
+            incident_type:                g('incident_type'),
+            collision_type:               g('collision_type'),
+            incident_severity:            g('incident_severity'),
+            authorities_contacted:        g('authorities_contacted'),
+            incident_state:               g('incident_state'),
+            incident_city:                g('incident_city'),
+            incident_hour_of_the_day:     parseInt(g('incident_hour_of_the_day')),
+            number_of_vehicles_involved:  parseInt(g('number_of_vehicles_involved')),
+            property_damage:              g('property_damage'),
+            bodily_injuries:              parseInt(g('bodily_injuries')),
+            witnesses:                    parseInt(g('witnesses')),
+            police_report_available:      g('police_report_available'),
+            total_claim_amount:           parseInt(g('total_claim_amount')),
+            injury_claim:                 parseInt(g('injury_claim')),
+            property_claim:               parseInt(g('property_claim')),
+            vehicle_claim:                parseInt(g('vehicle_claim')),
+            auto_make:                    g('auto_make'),
+            auto_model:                   g('auto_model'),
+            auto_year:                    parseInt(g('auto_year'))
+        };
+
+        try {
             const response = await fetch('/predict', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -303,28 +476,40 @@
             });
 
             const result = await response.json();
+
             const resultDiv = document.getElementById('result');
             const explanationDiv = document.getElementById('explanation');
             resultDiv.style.display = 'block';
             explanationDiv.style.display = 'block';
 
-            if (result.fraud_predicted === 1) {
+            if (result.decision === 'FRAUD_FLAG') {
                 resultDiv.className = 'fraud';
                 document.getElementById('result-icon').textContent = '🚨';
                 document.getElementById('result-text').textContent = 'FRAUD DETECTED';
-                document.getElementById('result-prob').textContent = 'Confidence: ' + (result.probability * 100).toFixed(1) + '%';
             } else {
                 resultDiv.className = 'not-fraud';
                 document.getElementById('result-icon').textContent = '✅';
                 document.getElementById('result-text').textContent = 'CLAIM APPEARS LEGITIMATE';
-                document.getElementById('result-prob').textContent = 'Confidence: ' + (result.probability * 100).toFixed(1) + '%';
             }
 
-            document.getElementById('explanation-text').textContent = result.explanation;
+            document.getElementById('result-prob').textContent =
+                'Fraud Score: ' + (result.fraud_score * 100).toFixed(1) + '%';
+            document.getElementById('result-confidence').textContent =
+                result.confidence_band;
+            document.getElementById('explanation-text').innerHTML = result.ai_explanation
+    .replace(/## (.*)/g, '<h3 style="color:#7c3aed;margin-bottom:8px">$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>')
+    .replace(/> (.*)/g, '<blockquote style="border-left:3px solid #7c3aed;padding-left:10px;color:#9ca3af">$1</blockquote>');
 
-            btn.textContent = 'ANALYZE FOR FRAUD';
-            btn.disabled = false;
+        } catch (err) {
+            alert('Error: ' + err.message);
         }
-    </script>
+
+        btn.textContent = 'ANALYZE FOR FRAUD';
+        btn.disabled = false;
+    }
+</script>
 </body>
 </html>

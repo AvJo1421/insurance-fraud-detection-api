@@ -1,0 +1,271 @@
+{
+  "model_name": "Insurance Fraud Detection v2",
+  "version": "2.0.0",
+  "created_at": "2026-04-25T14:18:37.971408Z",
+  "architecture": "Stacked Ensemble (XGBoost + LightGBM) \u2192 Logistic Regression meta-learner \u2192 Isotonic Calibration",
+  "training_data": {
+    "source": "insurance_claims.csv",
+    "rows": 1000,
+    "fraud_rate": 0.247,
+    "imbalance_handling": "SMOTE (k=5)"
+  },
+  "performance": {
+    "roc_auc": 0.822,
+    "avg_precision": 0.5432,
+    "fraud_recall": 1.0,
+    "fraud_precision": 0.245,
+    "optimal_threshold": 0.5,
+    "expected_value_at_threshold": 659500.0
+  },
+  "cost_assumptions": {
+    "false_negative_cost_gbp": 15000,
+    "false_positive_cost_gbp": 500
+  },
+  "regulatory_compliance": {
+    "explainability": "SHAP TreeExplainer (FCA Consumer Duty 2023, UK GDPR Art. 22)",
+    "fairness_audit": "Protected characteristics monitored (Equality Act 2010)",
+    "probability_calibration": "Isotonic Regression \u2014 actuarially sound scores",
+    "model_monitoring": "PSI baseline computed (1.1081) \u2014 Solvency II aligned",
+    "audit_logging": "Structured JSON per prediction (timestamp, input hash, decision)"
+  },
+  "feature_count": 50,
+  "top_features_shap": [
+    {
+      "feature": "incident_severity",
+      "mean_abs_shap": 2.019528388977051
+    },
+    {
+      "feature": "insured_hobbies",
+      "mean_abs_shap": 0.7219537496566772
+    },
+    {
+      "feature": "incident_state",
+      "mean_abs_shap": 0.365543395280838
+    },
+    {
+      "feature": "auto_year",
+      "mean_abs_shap": 0.2770399749279022
+    },
+    {
+      "feature": "no_witnesses",
+      "mean_abs_shap": 0.26822352409362793
+    },
+    {
+      "feature": "capital-gains",
+      "mean_abs_shap": 0.263082355260849
+    },
+    {
+      "feature": "injury_claim_ratio",
+      "mean_abs_shap": 0.24384252727031708
+    },
+    {
+      "feature": "insured_sex",
+      "mean_abs_shap": 0.24274200201034546
+    },
+    {
+      "feature": "policy_csl",
+      "mean_abs_shap": 0.23039492964744568
+    },
+    {
+      "feature": "vehicle_claim_ratio",
+      "mean_abs_shap": 0.22151966392993927
+    },
+    {
+      "feature": "insured_education_level",
+      "mean_abs_shap": 0.18448665738105774
+    },
+    {
+      "feature": "witnesses",
+      "mean_abs_shap": 0.18290095031261444
+    },
+    {
+      "feature": "collision_type",
+      "mean_abs_shap": 0.1761464625597
+    },
+    {
+      "feature": "property_claim_ratio",
+      "mean_abs_shap": 0.17111635208129883
+    },
+    {
+      "feature": "policy_deductable",
+      "mean_abs_shap": 0.16862288117408752
+    }
+  ],
+  "fairness_report": {
+    "sex_MALE": {
+      "avg_fraud_score": 0.3009,
+      "n": 89
+    },
+    "sex_FEMALE": {
+      "avg_fraud_score": 0.2732,
+      "n": 111
+    }
+  },
+  "psi_baseline": {
+    "value": 1.1081,
+    "status": "DRIFT DETECTED",
+    "computed_at": "2026-04-25T14:18:37.974291Z"
+  },
+  "threshold_ev_analysis": [
+    {
+      "threshold": 0.05,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.06,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.07,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.08,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.09,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.1,
+      "ev": 659500,
+      "tp": 49,
+      "fp": 151,
+      "fn": 0,
+      "tn": 0
+    },
+    {
+      "threshold": 0.11,
+      "ev": 546000,
+      "tp": 44,
+      "fp": 78,
+      "fn": 5,
+      "tn": 73
+    },
+    {
+      "threshold": 0.12,
+      "ev": 497500,
+      "tp": 42,
+      "fp": 55,
+      "fn": 7,
+      "tn": 96
+    },
+    {
+      "threshold": 0.13,
+      "ev": 474000,
+      "tp": 41,
+      "fp": 42,
+      "fn": 8,
+      "tn": 109
+    },
+    {
+      "threshold": 0.14,
+      "ev": 446500,
+      "tp": 40,
+      "fp": 37,
+      "fn": 9,
+      "tn": 114
+    },
+    {
+      "threshold": 0.15,
+      "ev": 448500,
+      "tp": 40,
+      "fp": 33,
+      "fn": 9,
+      "tn": 118
+    },
+    {
+      "threshold": 0.16,
+      "ev": 419000,
+      "tp": 39,
+      "fp": 32,
+      "fn": 10,
+      "tn": 119
+    },
+    {
+      "threshold": 0.17,
+      "ev": 420000,
+      "tp": 39,
+      "fp": 30,
+      "fn": 10,
+      "tn": 121
+    },
+    {
+      "threshold": 0.18,
+      "ev": 390000,
+      "tp": 38,
+      "fp": 30,
+      "fn": 11,
+      "tn": 121
+    },
+    {
+      "threshold": 0.19,
+      "ev": 391000,
+      "tp": 38,
+      "fp": 28,
+      "fn": 11,
+      "tn": 123
+    },
+    {
+      "threshold": 0.2,
+      "ev": 331000,
+      "tp": 36,
+      "fp": 28,
+      "fn": 13,
+      "tn": 123
+    },
+    {
+      "threshold": 0.21,
+      "ev": 302000,
+      "tp": 35,
+      "fp": 26,
+      "fn": 14,
+      "tn": 125
+    },
+    {
+      "threshold": 0.22,
+      "ev": 302500,
+      "tp": 35,
+      "fp": 25,
+      "fn": 14,
+      "tn": 126
+    },
+    {
+      "threshold": 0.23,
+      "ev": 272500,
+      "tp": 34,
+      "fp": 25,
+      "fn": 15,
+      "tn": 126
+    },
+    {
+      "threshold": 0.24,
+      "ev": 272500,
+      "tp": 34,
+      "fp": 25,
+      "fn": 15,
+      "tn": 126
+    }
+  ]
+}

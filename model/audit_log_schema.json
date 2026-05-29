@@ -1,0 +1,16 @@
+{
+  "_schema_version": "1.0",
+  "_description": "One record per prediction. Required for FCA audit trail.",
+  "fields": {
+    "prediction_id": "uuid \u2014 unique per request",
+    "timestamp_utc": "ISO 8601",
+    "input_hash": "SHA-256 of raw input JSON",
+    "fraud_score": "float 0-1 (calibrated probability)",
+    "decision": "FRAUD_FLAG | LEGITIMATE",
+    "threshold_used": 0.05,
+    "confidence_band": "LOW (<0.3) | MEDIUM (0.3-0.6) | HIGH (>0.6)",
+    "top_shap_factors": "list of top 5 features driving decision",
+    "model_version": "2.0.0",
+    "reviewer_required": "bool \u2014 true if score within 0.05 of threshold"
+  }
+}
